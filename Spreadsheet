@@ -1,0 +1,146 @@
+package textExcel;
+
+// Update this file with your own code.
+
+public class Spreadsheet implements Grid
+{
+	private Cell[][] grid = new Cell[20][12];
+	
+	public Spreadsheet() {
+		// sets the excel grid to all empty spaces/cells to start
+		for(int i = 0; i < grid.length; i++) {
+			for(int j = 0; j < grid[j].length; j++) {
+				grid[i][j] = new EmptyCell();
+			}
+		}
+	}
+    // takes all the user input and processes it to choose the right action
+	@Override
+	public String processCommand(String command)
+	{
+		if(command.equals(""))
+			return "";
+		// checks specific cell Ex. A1
+		if(command.length() <= 3)
+		    return inspect(command);
+		// sets specific cell equal to something. Ex. A1 = "tyler"
+		if(command.contains("="))
+			return assignment(command);
+		// clears cell at specific location. Ex. clear A1
+		if(command.toLowerCase().contains("clear") && command.length() > 5)
+			return clearOne(command);
+		// clears all cells. Ex. clear
+		else
+			return clear();
+	}
+	// checks specific cell
+	public String inspect(String command) {
+		SpreadsheetLocation Cell = new SpreadsheetLocation(command);
+		int row = Cell.getRow();
+		int col = Cell.getCol();
+		grid[row][col] = getCell(Cell);
+		String s = grid[row][col].fullCellText();
+		return s;
+		
+	}
+	
+    public String assignment(String command) {
+    	int equalIndex = command.indexOf("=");
+    	// text specific substring. Finds the word between quotes
+    	
+		String word = command.substring(equalIndex + 3);
+		// number specific substring. Finds number
+		String numWord = command.substring(equalIndex + 2);
+		// percent specific substring. Finds number without percent
+		String percentWord = numWord.substring(0, numWord.length() - 1);
+		String cellName = command.substring(0 , equalIndex - 1);
+		
+		SpreadsheetLocation Cell = new SpreadsheetLocation(cellName);
+		int row = Cell.getRow();
+		int col = Cell.getCol();
+		
+		// creates textCell		
+		if(command.contains("\""))
+		    grid[row][col] = new TextCell(word.substring(0, word.length() - 1));
+		
+		// creates valueCell
+		if(command.indexOf("%") == -1 && command.indexOf("\"") == -1)
+			grid[row][col] = new ValueCell(numWord);
+		
+		// creates percentCell
+		if(command.contains("%"))
+			grid[row][col] = new PercentCell(percentWord);
+		
+		return getGridText();
+	}
+    
+    public String clear() {
+    	for(int i = 0; i < grid.length; i++) {
+			for(int j = 0; j < grid[j].length; j++) {
+				grid[i][j] = new EmptyCell();
+			}
+		}
+    	return getGridText();
+    }
+    
+    public String clearOne(String command) {
+    	// location where the cellName always is
+    	String cellName = command.substring(6);
+    	
+    	SpreadsheetLocation Cell = new SpreadsheetLocation(cellName);
+		int row = Cell.getRow();
+		int col = Cell.getCol();
+		
+		grid[row][col] = new EmptyCell();
+		return getGridText();
+    }
+	
+
+	@Override
+	public int getRows()
+	{
+		return 20;
+	}
+
+	@Override
+	public int getCols()
+	{
+		return 12;
+	}
+
+	@Override
+	public Cell getCell(Location loc)
+	{
+	    int col = loc.getCol();
+	    int row = loc.getRow();
+	    
+		return grid[row][col];
+	}
+
+	@Override
+	public String getGridText()
+	{
+		// initial line
+ 		String sheet = "   |A         |B         |C         |D         |E         |F         |"
+				+ "G         |H         |I         |J         |K         |L         |";
+		
+		
+		for(int i = 0; i < grid.length; i++) {
+			// two if statements adjust for 2 digit row numbers
+			if(i < 9)
+			    sheet += "\n" + (i+1) + "  |";
+			if(i >= 9)
+				sheet += "\n" + (i+1) + " |";
+			for(int j = 0; j < grid[j].length; j++) {
+				sheet += grid[i][j].abbreviatedCellText() + "|";	
+			}
+		}
+		// adds line for syntax for the given tests
+		sheet += "\n";
+		
+		return sheet;
+	}
+	
+	
+
+}

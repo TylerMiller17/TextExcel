@@ -1,0 +1,31 @@
+package textExcel;
+
+public class ValueCell extends RealCell implements Cell {
+	
+	private String contain;	
+	public ValueCell(String contain) {
+		this.contain = contain;
+	}
+	
+	@Override
+	public String abbreviatedCellText() {
+		// changes to double and back to string
+		double thing = Double.parseDouble(contain);
+		String s = Double.toString(thing);
+		// checks if the length of the string is too big and uses subtring to minimize if it's too big
+		if(s.length() > 10)
+		    s = s.substring(0, 10);
+		// adds whitespace until the length is the right size
+		for(int i = s.length(); i < 10; i++) {
+			s += " ";
+		}
+		
+		return s;
+	}
+	
+	public String fullCellText() {
+		
+		return contain;
+	}
+
+}

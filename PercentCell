@@ -1,0 +1,35 @@
+package textExcel;
+
+public class PercentCell extends RealCell implements Cell {
+	
+	
+	private String contain;	
+	public PercentCell(String contain) {
+		this.contain = contain;
+	}
+	
+	@Override
+	public String abbreviatedCellText() {
+		
+		String s = contain;
+		// truncates
+		if(contain.contains("."))
+		    s = contain.substring(0, contain.indexOf("."));
+		// adds the percent and then adds whitespace needed
+		s += "%";
+		for(int i = s.length(); i < 10; i++) {
+			s += " ";
+		}
+		
+		return s;
+	}
+	
+	public String fullCellText() {
+		// converts to decimal form of percent
+		double n = Double.parseDouble(contain);
+		n /= 100;
+	    String s = Double.toString(n);
+		return s;
+	}
+	
+}
